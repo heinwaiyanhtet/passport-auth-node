@@ -9,6 +9,9 @@ import mongoose from "mongoose";
 import { hashPassword } from "../utils/hashPassword";
 
 export async function generateTokens(req: Request, res: Response) {
+
+  console.log("request");
+
   const currentUser = req.user as UserFromDB;
 
   if (!currentUser) {
@@ -22,6 +25,9 @@ export async function generateTokens(req: Request, res: Response) {
   };
 
   const accessToken = generateAccessToken(payload);
+
+  console.log("accessToken",accessToken);
+
   const refreshToken = jwt.sign(
     payload,
     process.env.REFRESH_TOKEN_SECRET as string,
@@ -29,19 +35,25 @@ export async function generateTokens(req: Request, res: Response) {
       expiresIn: "7d",
     }
   );
+  console.log("refreshToken",refreshToken);
 
   const expiryDate = new Date();
   expiryDate.setDate(expiryDate.getDate() + 7);
 
-  try {
-    await RefreshToken.create({
-      token: hashPassword(refreshToken),
-      userId: currentUser._id,
-      expiryDate: expiryDate,
-    });
-  } catch (error) {
-    return handleErrorResponse(res, "Error saving refresh token", 500);
-  }
+  return {
+    accessToken,
+    refreshToken
+  };
 
-  return res.json({ accessToken: accessToken, refreshToken: refreshToken });
+
+  // try {
+  //   await RefreshToken.create({
+  //     token: hashPassword(refreshToken),
+  //     userId: currentUser._id,
+  //     expiryDate: expiryDate,
+  //   });
+  // } catch (error) {
+  //   return handleErrorResponse(res, "Error saving refresh token", 500);
+  // }
+
 }

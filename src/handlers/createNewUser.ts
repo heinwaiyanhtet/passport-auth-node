@@ -10,6 +10,7 @@ export async function createNewUser(
   request: Request<{}, {}, IEmailUser>,
   response: Response<ResBody>
 ) {
+  
   const { username, email, password } = request.body;
 
   try {

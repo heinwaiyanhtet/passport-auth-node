@@ -12,6 +12,10 @@ export function handleErrorResponse(
   errorMessage: string | ErrorResponse,
   statusCode: number
 ) {
+  if (!res) {
+    console.error("Response object is undefined.");
+    return; 
+  }
   if (typeof errorMessage === 'string') {
     return res.status(statusCode).json({ message: errorMessage });
   } else {
